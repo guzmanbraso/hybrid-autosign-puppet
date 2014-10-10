@@ -71,3 +71,17 @@ To use preshared keys you need to add in the agent /etc/puppet a file named csr_
 extension_requests:
   pp_preshared_key: your_key_hash
 ```
+
+Thanks & Future
+----------------
+
+Thanks to @lutter for inspiration, he made a bash script to allow preshared keys. For more info:
+http://watzmann.net/blog/2014/06/puppet-autosign-policy.html
+
+In the future I hope to convert this to a puppet module and allow more methods to sign csr, maybe integrate
+something like https://github.com/mrzarquon/mrzarquon-certsigner from @mrzarquon which signs AWS instances
+if belong to your AWS account. 
+
+
+
+
