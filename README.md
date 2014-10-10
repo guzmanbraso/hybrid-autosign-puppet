@@ -48,5 +48,7 @@ Puppet agents
 To use network whitelisting you don't need to do anything on the agents.
    
 To use preshared keys you need to add in the agent /etc/puppet a file named csr_attributes.yaml that looks like this:
+```
     extension_requests:
       pp_preshared_key: your_key_hash
+```
