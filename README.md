@@ -82,6 +82,8 @@ In the future I hope to convert this to a puppet module and allow more methods t
 something like https://github.com/mrzarquon/mrzarquon-certsigner from @mrzarquon which signs AWS instances
 if belong to your AWS account. 
 
+Also thanks to @jbouse who inspired the above module which later inspired @lutter.
+
 
 
 
