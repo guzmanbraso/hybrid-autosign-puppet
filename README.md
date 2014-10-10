@@ -3,12 +3,22 @@ hybrid-autosign-puppet
 
 Allow autosign of puppet CSR based on request IP address or preshared-keys
 
+
+Background 
+----------
+
+When puppetmaster receives a CSR from a new host it will run the script that will check Apache/Nginx accesslog to get the IP address of the machine that submitted the request.
+If IP belongs to allowed network blocks it will sign the CSR rightaway, else will check for pre-sharedkeys.
+
+
 Requirements
 ------------
 
 - Perl 5+
 - Perl Module YAML::Tiny
 - Perl Module NetAddr::IP
+- Apache/Nginx with passenger in charge of puppetmaster connections.
+
 
 Install
 -------
