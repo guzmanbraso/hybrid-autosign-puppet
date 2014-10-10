@@ -56,6 +56,11 @@ To generate shared keys run (replace shared_key_name with something useful):
 tr -cd 'a-f0-9' < /dev/urandom | head -c 32 >/etc/puppet/hybrid-autosign-puppet/keys/shared_key_name
 ```
 
+To enable autosign in puppetmaster edit puppet.conf and inside [master] add the following line:
+```
+autosign = /etc/puppet/hybrid-autosign-puppet/hybrid-autosign.pl
+```
+
 Puppet agents
 -------------
 
