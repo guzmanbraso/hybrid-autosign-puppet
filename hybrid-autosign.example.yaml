@@ -1,9 +1,9 @@
 ---
-:config:
-- accesslog: /var/log/apache2/other_vhosts_access.log
-- scriptlog: /etc/puppet/hybrid-autosign-puppet/hybrid-autosign.log
-- keys_folder: /etc/puppet/hybrid-autosign-puppet/keys/
+config:
+- accesslog: /var/log/apache2/other_vhosts_access.log # For puppet self server should be /var/log/puppetlabs/puppetserver/puppetserver-access.log
+- scriptlog: /etc/puppetlabs/hybrid-autosign-puppet/hybrid-autosign.log
+- keys_folder: /etc/puppetlabs/hybrid-autosign-puppet/keys/
 
-:networks_allowed:
+networks_allowed:
 - 11.222.33.0/24
 - 11.222.44.0/24

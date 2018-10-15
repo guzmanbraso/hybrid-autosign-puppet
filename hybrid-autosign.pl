@@ -13,13 +13,13 @@ use NetAddr::IP;
 use POSIX;
 
 # Open config
-my $yaml = YAML::Tiny->read( '/etc/puppet/hybrid-autosign-puppet/hybrid-autosign.yaml' );
+my $yaml = YAML::Tiny->read( '/etc/puppetlabs/hybrid-autosign-puppet/hybrid-autosign.yaml' );
 
 # Subroutine to log actions
 sub execlog($) {
   my $msg = shift;
   my $return = shift;
-  my $scriptlog = $yaml->[0]->{':config'}->[1]->{'scriptlog'};
+  my $scriptlog = $yaml->[0]->{'config'}->[1]->{'scriptlog'};
   open(my $fh, '>>', $scriptlog) or die "Could not open file '$scriptlog' $!";
   my $now = POSIX::strftime("%m/%d/%Y %H:%M:%S\n", localtime);
   chomp($now);
@@ -27,25 +27,32 @@ sub execlog($) {
   close $fh;
 }
 
+my $certlinecount = 0;
 # Read certname and CSR        
 my $certname=$ARGV[0];
 my $csr = do { local $/; <STDIN> };
 
 # Parse accesslog and get the IP & environment this request was submitted to 
-my $accesslog = $yaml->[0]->{':config'}->[0]->{'accesslog'};
+my $accesslog = $yaml->[0]->{'config'}->[0]->{'accesslog'};
 my $req_ip;
 my $req_env;
 open my $FH, '<', $accesslog or die "could not open '$accesslog', because the OS said: $!";
 while ( <$FH> ) {
-  if ( m/(\d+\.\d+\.\d+\.\d+) .*GET \/(\w+)\/certificate_request\/$certname/ ) {
+  $certlinecount++;
+  if ( m/(\d+\.\d+\.\d+\.\d+) .*GET \/.*\/certificate_request\/$certname\?environment=(\w+)\&/ ) {
     $req_ip = $1;
     $req_env = $2;
   }
 }
 
+if ( !$req_ip || !$req_env ) {
+  execlog("CRITICAL: No match on file '".$yaml->[0]->{'config'}->[0]->{'accesslog'}."' for certname $certname. Rejecting request");
+  exit 1;
+}
+
 # Check if IP is allowed
 my $ip = NetAddr::IP->new($req_ip);
-foreach my $network_block (@{$yaml->[0]->{':networks_allowed'}}) {
+foreach my $network_block (@{$yaml->[0]->{'networks_allowed'}}) {
   my $network = NetAddr::IP->new($network_block);
   if ($ip->within($network)) {
     execlog("Signed CSR $certname because is on network whitelist - IP $req_ip - Env: $req_env");
@@ -58,7 +65,7 @@ my $req_shared_key;
 $req_shared_key=`echo "$csr" |openssl req -noout -text|grep -A1 1.3.6.1.4.1.34380.1.1.4|tail -n 1`;
 if ($req_shared_key) {
   $req_shared_key =~ s/^\s+|\s+$//g;
-  my $keys_folder=$yaml->[0]->{':config'}->[2]->{'keys_folder'};
+  my $keys_folder=$yaml->[0]->{'config'}->[2]->{'keys_folder'};
   my @valid_keys = <${keys_folder}*>;
   foreach my $valid_key (@valid_keys) {
     open(KEY, $valid_key) or die "Can't read file '$valid_key' [$!]\n";  
