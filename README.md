@@ -35,13 +35,13 @@ yum install perl-YAML-Tiny perl-NetAddr-IP
 
 Clone the repo inside puppet folder:
 ```
-cd /etc/puppet/
+cd /etc/puppetlabs/
 git clone git@github.com:guzmanbraso/hybrid-autosign-puppet.git
 ```
 
 Make puppet user owner of everything inside
 ```
-chown puppet.puppet /etc/puppet/hybrid-autosign-puppet/ -R
+chown puppet.puppet /etc/puppetlabs/hybrid-autosign-puppet/ -R
 ```
 
 Allow all users to read apache/nginx logs
@@ -63,12 +63,12 @@ To whitelist network blocks edit the file and add all networks inside 'networks_
 
 To generate shared keys run (replace shared_key_name with something useful):
 ```
-tr -cd 'a-f0-9' < /dev/urandom | head -c 32 >/etc/puppet/hybrid-autosign-puppet/keys/shared_key_name
+tr -cd 'a-f0-9' < /dev/urandom | head -c 32 >/etc/puppetlabs/hybrid-autosign-puppet/keys/shared_key_name
 ```
 
 To enable autosign in puppetmaster edit puppet.conf and inside [master] add the following line:
 ```
-autosign = /etc/puppet/hybrid-autosign-puppet/hybrid-autosign.pl
+autosign = /etc/puppetlabs/hybrid-autosign-puppet/hybrid-autosign.pl
 ```
 
 Puppet agents
@@ -76,11 +76,23 @@ Puppet agents
 
 To use network whitelisting you don't need to do anything on the agents.
    
-To use preshared keys you need to add in the agent /etc/puppet a file named csr_attributes.yaml that looks like this:
+To use preshared keys you need to add in the agent /etc/puppetlabs/puppet/ a file named csr_attributes.yaml that looks like this:
 ```
 extension_requests:
   pp_preshared_key: your_key_hash
 ```
+
+Troubleshooting with Puppet 5
+-----------------------------
+
+To debug the script first generate a new CSR from an agent, then look for the CSR file usually found on 
+/etc/puppetlabs/puppet/ssl/ca/requests/[[ certname ]].pem.
+
+Ej. If is node1.test.net then csr would be in /etc/puppetlabs/puppet/ssl/ca/requests/node1.test.net.pem, to simulate the signing request you should run the script like this:
+```
+/etc/puppetlabs/hybrid-autosign-puppet/hybrid-autosign.pl node1.test.net < /etc/puppetlabs/puppet/ssl/ca/requests/node1.test.net.pem
+```
+
 
 Thanks & Future
 ----------------
