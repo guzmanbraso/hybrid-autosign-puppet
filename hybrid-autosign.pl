@@ -64,7 +64,7 @@ foreach my $network_block (@{$yaml->[0]->{'networks_allowed'}}) {
 my $req_shared_key;
 $req_shared_key=`echo "$csr" |openssl req -noout -text|grep -A1 1.3.6.1.4.1.34380.1.1.4|tail -n 1`;
 if ($req_shared_key) {
-  $req_shared_key =~ s/^\s+|\s+$//g;
+  $req_shared_key =~ s/^[\s\.]+|\s+$//g;
   my $keys_folder=$yaml->[0]->{'config'}->[2]->{'keys_folder'};
   my @valid_keys = <${keys_folder}*>;
   foreach my $valid_key (@valid_keys) {
